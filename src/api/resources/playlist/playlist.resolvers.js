@@ -27,5 +27,12 @@ export const playlistResolvers = {
   Mutation: {
     newPlaylist,
     updatePlaylist
+  },
+
+  Playlist: {
+    async songs(playlist) {
+      const pl = await playlist.populate('songs').execPopulate()
+      return pl.songs
+    }
   }
 }
