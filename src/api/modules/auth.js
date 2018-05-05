@@ -64,11 +64,11 @@ export const verifyUser = () => (req, res, next) => {
   // look user up in the DB so we can check
   // if the passwords match for the username
   User.findOne({username: username})
-    .then(function(user) {
-      if (!user) {
-        res.status(401).send('No user with the given username')
-      } else {
-        // checking the passowords here
+  .then(function(user) {
+    if (!user) {
+      res.status(401).send('No user with the given username')
+    } else {
+      // checking the passowords here
         if (!user.authenticate(password)) {
           res.status(401).send('Wrong password')
         } else {
@@ -81,7 +81,7 @@ export const verifyUser = () => (req, res, next) => {
         }
       }
     })
-    .catch(error => next(err))
+    .catch(err => next(err))
 }
 
 export const signToken = (id) => jwt.sign(

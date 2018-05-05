@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import bcrypt from 'bcryptjs'
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -6,15 +7,15 @@ const userSchema = new mongoose.Schema({
     unique: true,
     required: true
   },
-  passwordHash: {
+  password: {
     required: true,
     type: String,
   }
 }, {timestamps: true})
 
 userSchema.methods = {
-  authenticate(plaintTextPassword) {
-    return bcrypt.compareSync(plainTextPword, this.password)
+  authenticate(plainTextPassword) {
+    return bcrypt.compareSync(plainTextPassword, this.password)
   },
   hashPassword(plaintTextPassword) {
     if (!plaintTextPassword) {
@@ -25,5 +26,15 @@ userSchema.methods = {
     return bcrypt.hashSync(plaintTextPassword, salt)
   }
 }
+
+userSchema.pre('save', function(next) {
+  const user = this
+
+  if (user.isModified('password')) {
+    user.password = user.hashPassword(user.password)
+  }
+
+  next()
+})
 
 export const User = mongoose.model('user', userSchema)
